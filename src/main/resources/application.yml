@@ -1,0 +1,130 @@
+server:
+  port: 8080
+  max-http-header-size: 100000
+  servlet:
+    session:
+      timeout: 600
+spring:
+  application:
+    name: agile-base-server
+  session:
+    # 设置spring-session存储类型
+    store-type: redis
+  redis:
+    # Redis数据库索引（默认为0）
+    database: 1
+    hostName: localhost
+    port: 6379
+    password:
+    timeout: 0
+    general-config:
+      min-idle: 1
+      max-idle: 2
+      max-total: 5
+      max-wait: 30000
+      test-on-borrow: true
+      block-when-exhausted: true
+      test-on-return: true
+      test-on-create: true
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 20000
+      num-tests-per-eviction-run: 20000
+    jedis:
+      pool:
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait:
+        # 连接池中的最大空闲连接
+        max-idle: 8
+        # 连接池中的最小空闲连接
+        min-idle: 0
+  datasource:
+    druid:
+      url: jdbc:mysql://localhost:3306/mytest?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: root
+      password: root12345
+      # 初始化时建立物理连接的个数。初始化发生在显示调用init方法，或者第一次getConnection时
+      initial-size: 10
+      # 最小连接池数量
+      min-idle: 10
+      # 最大连接池数量
+      max-active: 20
+      # 获取连接等待超时的时间
+      max-wait: 20000
+      # 间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      # 一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      #  验证连接有效与否的SQL，不同的数据配置不同
+      validation-query: select 1
+      #  建议配置为true，不影响性能，并且保证安全性。申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
+      test-while-idle: true
+      #  申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。这里建议配置为TRUE，防止取到的连接不可用
+      test-on-borrow: true
+      #  归还连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能
+      test-on-return: false
+      #  是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大，比如说oracle。在mysql5.5以下的版本中没有PSCache功能，建议关闭掉。作者在5.5版本中使用PSCache，通过监控界面发现PSCache有缓存命中率记录，该应该是支持PSCache。打开PSCache，并且指定每个连接上PSCache的大小
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      #  属性类型是字符串，通过别名的方式配置扩展插件，常用的插件有：监控统计用的filter:stat 日志用的filter:log4j 防御sql注入的filter:wall
+      filters: stat,wall,log4j
+      stat-view-servlet:
+        login-username: druid
+        login-password: druid
+  http:
+    encoding:
+      charset: utf-8
+      enabled: true
+      force: true
+  resources:
+    # 资源缓存时间，单位秒，4 h
+    chain:
+      # 开启gzip压缩
+      # 启用缓存
+      cache: true
+      compressed: true
+    static-locations:
+      - classpath:/resources/
+      - file:/Users/reige/work/mapo-manage/
+      - classpath:/META-INF/resources/
+      - classpath:/META-INF/resources/webjars/
+  activemq:
+    broker-url: tcp://localhost:61616
+    user: admin
+    password: admin
+    packages:
+      trust-all: true
+#mybatis
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*Mapper.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.example.demo.mapper
+  global-config:
+    # 数据库相关配置
+    db-config:
+      #主键类型  AUTO:"数据库ID自增", INPUT:"用户输入ID",ID_WORKER:"全局唯一ID (数字类型唯一ID)", UUID:"全局唯一ID UUID";
+      id-type: UUID
+      #字段策略 IGNORED:"忽略判断",NOT_NULL:"非 NULL 判断"),NOT_EMPTY:"非空判断"
+      field-strategy: not_null
+      #驼峰下划线转换
+      column-underline: true
+      #数据库大写下划线转换
+      #capital-mode: true
+      #逻辑删除配置
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+      db-type: mysql
+    #刷新mapper 调试神器
+    refresh: true
+  # 原生配置
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+
+#file-upload:
+#  ## 文件上传文件夹 自动 追加 /uploads/
+#  file-save-path: E://IDE//IDE//workspace//mapo-manage
+#  template-path: E://IDE//IDE//workspace//mapo-manage//template
+#  compress-height: 200
+#  compress-width: 200
+#  ffmpeg-home:  /Users/reige/work/mapo-manage/doc/ffmpeg/bin
